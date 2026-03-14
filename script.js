@@ -52,59 +52,93 @@ document.addEventListener("DOMContentLoaded", () => {
             .trim();
     }
 
+    function filterCollection(cards, normalizedQuery) {
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+            const searchableText = normalizeText(
+                `${card.dataset.search || ""} ${card.textContent || ""}`
+            );
+
+            const match = normalizedQuery === "" || searchableText.includes(normalizedQuery);
+            card.classList.toggle("is-hidden", !match);
+
+            if (match) {
+                visibleCount++;
+            }
+        });
+
+        return visibleCount;
+    }
+
     function filterItems(query) {
         const normalizedQuery = normalizeText(query);
+
         const groupCards = document.querySelectorAll(".group-card");
         const bookCards = document.querySelectorAll(".book-card");
+        const productCards = document.querySelectorAll(".product-card");
 
-        let groupsVisible = 0;
-        let booksVisible = 0;
-
-        groupCards.forEach((card) => {
-            const searchableText = normalizeText(card.dataset.search + " " + card.textContent);
-
-            const match = normalizedQuery === "" || searchableText.includes(normalizedQuery);
-            card.classList.toggle("is-hidden", !match);
-
-            if (match) groupsVisible++;
-        });
-
-        bookCards.forEach((card) => {
-            const searchableText = normalizeText(card.dataset.search + " " + card.textContent);
-
-            const match = normalizedQuery === "" || searchableText.includes(normalizedQuery);
-            card.classList.toggle("is-hidden", !match);
-
-            if (match) booksVisible++;
-        });
+        const groupsVisible = filterCollection(groupCards, normalizedQuery);
+        const booksVisible = filterCollection(bookCards, normalizedQuery);
+        const productsVisible = filterCollection(productCards, normalizedQuery);
 
         if (normalizedQuery === "") {
-            searchFeedback.textContent = "Pesquise por áreas, grupos, livros ou habilidades.";
-            return;
+            searchFeedback.textContent = "Pesquise por áreas, grupos, livros, mapas mentais, resumos ou materiais de apoio.";
+            return {
+                groupsVisible,
+                booksVisible,
+                productsVisible
+            };
         }
 
-        if (groupsVisible === 0 && booksVisible === 0) {
+        const totalVisible = groupsVisible + booksVisible + productsVisible;
+
+        if (totalVisible === 0) {
             searchFeedback.textContent = `Nenhum resultado encontrado para "${query}".`;
+            return {
+                groupsVisible,
+                booksVisible,
+                productsVisible
+            };
+        }
+
+        searchFeedback.textContent =
+            `Resultados encontrados: ${groupsVisible} grupo(s), ${booksVisible} livro(s) e ${productsVisible} material(is).`;
+
+        return {
+            groupsVisible,
+            booksVisible,
+            productsVisible
+        };
+    }
+
+    function scrollToFirstResultSection(resultCounts) {
+        const { groupsVisible, booksVisible, productsVisible } = resultCounts;
+
+        if (groupsVisible > 0) {
+            scrollToSection("grupos");
             return;
         }
 
-        searchFeedback.textContent = `Resultados encontrados: ${groupsVisible} grupo(s) e ${booksVisible} livro(s).`;
+        if (booksVisible > 0) {
+            scrollToSection("livros");
+            return;
+        }
+
+        if (productsVisible > 0) {
+            scrollToSection("lojinha");
+        }
     }
 
     searchForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
         const query = searchInput.value;
-        filterItems(query);
-
+        const resultCounts = filterItems(query);
         const normalizedQuery = normalizeText(query);
+
         if (normalizedQuery !== "") {
-            const groupsSection = document.getElementById("grupos");
-            groupsSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-            updateActiveNav("grupos");
+            scrollToFirstResultSection(resultCounts);
         }
     });
 
@@ -112,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filterItems(searchInput.value);
     });
 
-    const observedSections = ["inicio", "grupos", "livros"]
+    const observedSections = ["inicio", "grupos", "livros", "lojinha", "parceiros"]
         .map((id) => document.getElementById(id))
         .filter(Boolean);
 

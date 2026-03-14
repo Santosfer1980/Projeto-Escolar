@@ -517,7 +517,9 @@ h1 {
 
 .cards-list,
 .group-list,
-.book-list {
+.book-list,
+.shop-list,
+.partner-list {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
@@ -686,6 +688,7 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    align-items: center;
 }
 
 .status-badge {
@@ -712,6 +715,28 @@ h1 {
     color: var(--danger-text);
 }
 
+.shop-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+    box-shadow: 0 8px 18px rgba(109, 40, 217, 0.18);
+}
+
+.shop-link:hover,
+.shop-link:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 22px rgba(109, 40, 217, 0.24);
+    outline: none;
+}
+
 .is-hidden {
     display: none !important;
 }
@@ -723,7 +748,7 @@ h1 {
     bottom: 8px;
     z-index: 40;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
     padding: 8px;
     border-radius: 20px;
@@ -924,7 +949,9 @@ input:focus-visible,
 
     .cards-list,
     .group-list,
-    .book-list {
+    .book-list,
+    .shop-list,
+    .partner-list {
         grid-template-columns: 1fr 1fr;
         gap: 14px;
     }
@@ -978,7 +1005,7 @@ input:focus-visible,
         left: 50%;
         right: auto;
         transform: translateX(-50%);
-        width: min(560px, calc(100% - 24px));
+        width: min(700px, calc(100% - 24px));
         bottom: 12px;
         padding: 10px;
         gap: 8px;
@@ -1119,7 +1146,9 @@ input:focus-visible,
 
     .cards-list,
     .group-list,
-    .book-list {
+    .book-list,
+    .shop-list,
+    .partner-list {
         gap: 16px;
     }
 
